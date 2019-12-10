@@ -1,9 +1,63 @@
+buildscript {
+	ext.kotlin_version = '1.3.50'
+	ext {
+		springBootVersion = '2.2.0.RELEASE'
+		springCloudVersion = '2.1.4.RELEASE'
+		lombokVersion = '1.18.8'
+		lombokPluginVersion = '4.1.6'
+		kotlin_version = "1.3.50"
+		flywayVersion = '5.0.7'
+		postgresqlJdbcVersion = '42.2.5'
+		swaggerVersion = "2.9.2"
+		jooqVersion = '3.12.3'
+		jooqGradlePlugin = '3.0.3'
+		schema = "${buildSchema}"
+	}
+	repositories {
+		maven {
+			url "${beiartf_url}"
+			credentials(AwsCredentials) {
+				accessKey = "$System.env.BEIARTF_ACCESS_KEY_ID"
+				secretKey = "$System.env.BEIARTF_SECRET_ACCESS_KEY"
+				sessionToken = "$System.env.BEIARTF_SESSION_TOKEN"
+			}
+		}
+		jcenter()
+		jcenter {
+			url "http://oss.jfrog.org/artifactory/oss-snapshot-local/"
+		}
+		mavenLocal()
+		maven {
+			url "https://plugins.gradle.org/m2/"
+		}
+		maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local/' }
+	}
+	dependencies {
+		classpath("io.freefair.gradle:lombok-plugin:${lombokPluginVersion}")
+		classpath "commons-io:commons-io:2.5"
+		classpath 'org.flywaydb:flyway-core:5.2.4'
+		classpath "org.postgresql:postgresql:${postgresqlJdbcVersion}"
+		classpath("org.jooq:jooq-codegen:${jooqVersion}")
+		classpath 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.15'
+		classpath "nu.studer:gradle-jooq-plugin:${jooqGradlePlugin}"
+	}
+}
+
 plugins {
 	id 'org.springframework.boot' version '2.2.2.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
 	id 'org.asciidoctor.convert' version '1.5.8'
 	id 'java'
+	id "io.freefair.lombok" version "${lombokPluginVersion}"
+	id "org.flywaydb.flyway" version "5.2.4"
+	id 'nu.studer.jooq' version "${jooqGradlePlugin}"
 }
+
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'io.freefair.lombok'
+apply plugin: 'org.flywaydb.flyway'
+apply plugin: 'nu.studer.jooq'
 
 group = 'com.tvlk'
 version = '0.0.1-SNAPSHOT'
@@ -39,9 +93,30 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
+	implementation group: 'org.postgresql', name: 'postgresql', version: "${postgresqlJdbcVersion}"
+
+	implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
+	compile group: 'org.jooq', name: 'jooq-codegen', version: "${jooqVersion}"
+	compile "org.jooq:jooq:${jooqVersion}"
+
+
+	/* ----------------------------
+   * --  Spring Cloud AWS      --
+   * ----------------------------
+   */
+	compile group: 'com.amazonaws', name: 'aws-java-sdk-core', version: '1.11.677'
+	compile group: 'com.amazonaws', name: 'aws-java-sdk-ssm', version: '1.11.677'
 }
 
 test {
+	doFirst {
+		environment 'schema', "${buildSchema}"
+		environment 'jooqJdbcUrl', "${jooqJdbcUrl}"
+		environment 'jooqJdbcPassword', "${jooqJdbcPassword}"
+		environment 'jooqJdbcUser', "${jooqJdbcUser}"
+	}
+	systemProperties(System.getProperties())
 	outputs.dir snippetsDir
 	useJUnitPlatform()
 }
@@ -49,4 +124,73 @@ test {
 asciidoctor {
 	inputs.dir snippetsDir
 	dependsOn test
+}
+
+flyway {
+	url = "${jooqJdbcUrl}"
+	user = "${jooqJdbcUser}"
+	password = "${jooqJdbcPassword}"
+	schemas = ["${buildSchema}"]
+	locations = ['filesystem:src/main/resources/db/migration']
+	placeholders = [
+		'schema'      : "${buildSchema}",
+		'svc_user'    : "${jooqJdbcUser}",
+		'support_user': "${jooqJdbcUser}"
+	]
+}
+
+jooq {
+	version = '3.12.3'
+	edition = 'OSS'
+}
+
+task Jooq {
+	outputs.upToDateWhen { false }
+
+	doLast {
+		def writer = new StringWriter()
+		def xml = new groovy.xml.MarkupBuilder(writer)
+			.configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.12.0.xsd') {
+				jdbc() {
+					driver('org.postgresql.Driver')
+					url("${jooqJdbcUrl}")
+					user("${jooqJdbcUser}")
+					password("${jooqJdbcPassword}")
+				}
+				generator() {
+					name('org.jooq.codegen.JavaGenerator')
+					database() {
+						delegate.name('org.jooq.meta.postgres.PostgresDatabase')
+						includes('.*')
+						excludes('flyway_schema_history')
+						inputSchema("${schema}")
+					}
+					generate() {
+						pojos true
+						records true
+						daos true
+					}
+					target() {
+						packageName('com.tvlk.karate.db')
+						directory('src/main/gen')
+					}
+				}
+			}
+
+		def config = javax.xml.bind.JAXB.unmarshal(new StringReader(writer.toString()), org.jooq.meta.jaxb.Configuration.class)
+		org.jooq.codegen.GenerationTool.generate(config)
+	}
+}
+
+Jooq.dependsOn flywayInfo
+Jooq.dependsOn flywayMigrate
+
+sourceSets {
+	main {
+		java {
+			srcDirs 'src/main/java'
+			srcDirs 'src/main/kotlin'
+			srcDirs 'src/main/gen'
+		}
+	}
 }
