@@ -12,3 +12,14 @@ spring:
       schema: ${schema}
   jooq:
     sql-dialect: postgres
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+      base-path: ${app.management.base-path:/actuator}
+    enabled-by-default: true
+  server:
+    servlet:
+      context-path: ${app.management.base-path:/actuator}

@@ -100,6 +100,11 @@ dependencies {
 	compile group: 'org.jooq', name: 'jooq-codegen', version: "${jooqVersion}"
 	compile "org.jooq:jooq:${jooqVersion}"
 
+	/* ----------------------------
+  * --  Logging                --
+  * -----------------------------
+  */
+	compile 'net.logstash.logback:logstash-logback-encoder:4.11'
 
 	/* ----------------------------
    * --  Spring Cloud AWS      --
@@ -169,6 +174,7 @@ task Jooq {
 						pojos true
 						records true
 						daos true
+						springAnnotations true
 					}
 					target() {
 						packageName('com.tvlk.karate.db')
