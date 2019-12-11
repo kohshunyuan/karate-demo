@@ -5,11 +5,11 @@ spring:
   application:
     name: dennis-light-step-demo
   datasource:
-    url: ${jooqJdbcUrl}
-    username: ${jooqJdbcUser}
-    password: ${jooqJdbcPassword}
+    url: "${jooqJdbcUrl:jdbc:postgresql://localhost:5432/postgres}"
+    username: "${jooqJdbcUser:postgres}"
+    password: "${jooqJdbcPassword:password}"
     hikari:
-      schema: ${schema}
+      schema: "${schema:karate}"
   jooq:
     sql-dialect: postgres
 
