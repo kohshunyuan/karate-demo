@@ -159,7 +159,6 @@ bootRun {
 		environment 'jooqJdbcUser', "${jooqJdbcUser}"
 	}
 	dependsOn asciidoctor
-	finalizedBy(copyAsciidoc)
 }
 
 flyway {
