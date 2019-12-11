@@ -1,0 +1,124 @@
+= Spring REST Docs REST Assured Sample
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toc-title: Index
+:toclevels: 4
+:sectlinks:
+
+Sample application demonstrating how to use Spring REST Docs with REST Assured.
+
+`Karate Service Demo` makes a call to a very simple service. The service
+that is being tested is running on port `8888` on `ip-172-24-63-138.ap-southeast-1.compute.internal`. The tests make use of a
+preprocessor to modify the request so that it appears to have been sent to
+`http://ip-172-24-63-138.ap-southeast-1.compute.internal`. If your service includes URIs in its responses, for example
+because it uses hypermedia, similar preprocessing can be applied to the response before
+it is documented.
+
+Three snippets are produced. One showing how to make a request using cURL:
+
+== Order Controller
+
+=== Create Order
+include::{snippets}/create-order/curl-request.adoc[]
+
+One showing the HTTP request:
+
+include::{snippets}/create-order/http-request.adoc[]
+
+One showing the HTTP request body:
+
+include::{snippets}/create-order/request-body.adoc[]
+
+And one showing the HTTP response:
+
+include::{snippets}/create-order/http-response.adoc[]
+
+One showing the HTTP response body:
+
+include::{snippets}/create-order/response-body.adoc[]
+
+=== Query Order
+include::{snippets}/get-order-by-id/curl-request.adoc[]
+
+One showing the HTTP request:
+
+include::{snippets}/get-order-by-id/http-request.adoc[]
+
+And one showing the HTTP response:
+
+include::{snippets}/get-order-by-id/http-response.adoc[]
+
+One showing the HTTP response body:
+
+include::{snippets}/get-order-by-id/response-body.adoc[]
+
+=== Find All Order
+include::{snippets}/find-all-orders/curl-request.adoc[]
+
+One showing the HTTP request:
+
+include::{snippets}/find-all-orders/http-request.adoc[]
+
+And one showing the HTTP response:
+
+include::{snippets}/find-all-orders/http-response.adoc[]
+
+One showing the HTTP response body:
+
+include::{snippets}/find-all-orders/response-body.adoc[]
+
+== Payment
+
+=== Payment Options
+
+include::{snippets}/payment-options/curl-request.adoc[]
+
+HTTP request:
+
+include::{snippets}/payment-options/http-request.adoc[]
+
+HTTP request parameters:
+
+include::{snippets}/payment-options/request-parameters.adoc[]
+
+HTTP response:
+
+include::{snippets}/payment-options/http-response.adoc[]
+
+HTTP response body:
+
+include::{snippets}/payment-options/response-body.adoc[]
+
+HTTP response fields:
+
+include::{snippets}/payment-options/response-fields.adoc[]
+
+=== Payment Submission
+
+include::{snippets}/payment-submission/curl-request.adoc[]
+
+HTTP request:
+
+include::{snippets}/payment-submission/http-request.adoc[]
+
+HTTP request body:
+
+include::{snippets}/payment-submission/request-body.adoc[]
+
+HTTP request fields:
+
+include::{snippets}/payment-submission/request-fields.adoc[]
+
+HTTP response:
+
+include::{snippets}/payment-submission/http-response.adoc[]
+
+HTTP response body:
+
+include::{snippets}/payment-submission/response-body.adoc[]
+
+HTTP response fields:
+
+include::{snippets}/payment-submission/response-fields.adoc[]

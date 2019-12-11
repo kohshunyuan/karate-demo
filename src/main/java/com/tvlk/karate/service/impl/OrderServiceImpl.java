@@ -8,13 +8,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @Data
 public class OrderServiceImpl implements OrderService {
 
+  private final OrderDao orderDao;
+
   @Autowired
-  private OrderDao orderDao;
+  public OrderServiceImpl(OrderDao orderDao) {
+    this.orderDao = orderDao;
+  }
 
   @Override
   public Order insertOrder(Order order) {
@@ -25,5 +31,10 @@ public class OrderServiceImpl implements OrderService {
   @Override
   public Order getOrderById(int id) {
     return orderDao.fetchOneById(id);
+  }
+
+  @Override
+  public List<Order> getAllOrders() {
+    return orderDao.findAll();
   }
 }

@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/payment")
+@RequestMapping(value = "/api/payment")
 @Slf4j
 public class PaymentController {
 
   @Autowired
   private PaymentService paymentService;
 
-  @GetMapping(value = "/options")
+  @GetMapping(value = "/options")             
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
   public List<AvailablePaymentOption> getPaymentOptions() {

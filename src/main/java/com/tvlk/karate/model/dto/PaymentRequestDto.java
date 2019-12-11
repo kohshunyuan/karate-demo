@@ -1,7 +1,6 @@
 package com.tvlk.karate.model.dto;
 
 import com.tvlk.karate.db.enums.PaymentOption;
-import com.tvlk.karate.db.enums.PaymentStatus;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
