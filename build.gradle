@@ -158,7 +158,6 @@ bootRun {
 		environment 'jooqJdbcPassword', "${jooqJdbcPassword}"
 		environment 'jooqJdbcUser', "${jooqJdbcUser}"
 	}
-	dependsOn asciidoctor
 }
 
 flyway {
