@@ -151,6 +151,17 @@ asciidoctor {
 	dependsOn test
 }
 
+bootRun {
+	doFirst {
+		environment 'schema', "${buildSchema}"
+		environment 'jooqJdbcUrl', "${jooqJdbcUrl}"
+		environment 'jooqJdbcPassword', "${jooqJdbcPassword}"
+		environment 'jooqJdbcUser', "${jooqJdbcUser}"
+	}
+	dependsOn asciidoctor
+	finalizedBy(copyAsciidoc)
+}
+
 flyway {
 	url = "${jooqJdbcUrl}"
 	user = "${jooqJdbcUser}"
