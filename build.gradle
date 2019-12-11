@@ -100,7 +100,7 @@ dependencies {
 	implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
 	compile group: 'org.jooq', name: 'jooq-codegen', version: "${jooqVersion}"
 	compile "org.jooq:jooq:${jooqVersion}"
-
+	
 	/* ----------------------------
   * --  Logging                --
   * -----------------------------
@@ -195,6 +195,7 @@ task Jooq {
 						records true
 						daos true
 						springAnnotations true
+						generatedAnnotation false
 					}
 					target() {
 						packageName('com.tvlk.karate.db')
@@ -215,7 +216,6 @@ sourceSets {
 	main {
 		java {
 			srcDirs 'src/main/java'
-			srcDirs 'src/main/kotlin'
 			srcDirs 'src/main/gen'
 		}
 	}
