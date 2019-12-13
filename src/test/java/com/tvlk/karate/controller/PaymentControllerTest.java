@@ -18,11 +18,14 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static com.tvlk.karate.Constant.HOST_NAME;
+import static com.tvlk.karate.Constant.PORT;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.templates.TemplateFormats.asciidoctor;
@@ -55,7 +58,11 @@ class PaymentControllerTest {
                          preprocessRequest(modifyUris()
                                                .scheme("http")
                                                .host(HOST_NAME)
-                                               .removePort())))
+                                               .port(PORT)),
+                         responseFields(fieldWithPath("[].id").description("Payment Option Id"),
+                                        fieldWithPath("[].paymentOption").description("Payment Option (BANK_TRANSFER, CREDIT_CARD"),
+                                        fieldWithPath("[].active").description("Active/In-Active"))
+        ))
         .when()
         .port(this.port)
         .get("/api/payment/options")
@@ -72,7 +79,17 @@ class PaymentControllerTest {
                          preprocessRequest(modifyUris()
                                                .scheme("http")
                                                .host(HOST_NAME)
-                                               .removePort())))
+                                               .port(PORT)),
+                         requestFields(fieldWithPath("orderId").description("Order Id"),
+                                       fieldWithPath("paymentOption").description("Payment Option (BANK_TRANSFER, CREDIT_CARD")),
+                         responseFields(fieldWithPath("id").description("Order Id"),
+                                        fieldWithPath("productType").description("Product Type (HOTEL, FLIGHT)"),
+                                        fieldWithPath("productName").description("Product Name"),
+                                        fieldWithPath("productDesc").description("Product Description").optional(),
+                                        fieldWithPath("paymentStatus").description("Payment Status (PENDING, SUCCESS, FAIL)"),
+                                        fieldWithPath("paymentOption").description("Payment Option (BANK_TRANSFER, CREDIT_CARD"),
+                                        fieldWithPath("created").description("created"),
+                                        fieldWithPath("updated").description("updated"))))
         .when()
         .port(this.port)
         .body("{\n" +

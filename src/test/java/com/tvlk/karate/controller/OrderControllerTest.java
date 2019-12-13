@@ -4,6 +4,7 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.Header;
 import io.restassured.specification.RequestSpecification;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,10 +19,14 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static com.tvlk.karate.Constant.HOST_NAME;
+import static com.tvlk.karate.Constant.PORT;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.templates.TemplateFormats.asciidoctor;
@@ -51,12 +56,25 @@ public class OrderControllerTest {
                          preprocessRequest(modifyUris()
                                                .scheme("http")
                                                .host(HOST_NAME)
-                                               .removePort())))
+                                               .port(PORT)),
+                         requestFields(fieldWithPath("productType").description("Product Type (HOTEL, FLIGHT)"),
+                                       fieldWithPath("productName").description("Product Name"),
+                                       fieldWithPath("productDesc").description("Product Description (Optional)").optional()),
+                         responseFields(fieldWithPath("id").description("Order Id"),
+                                        fieldWithPath("productType").description("Product Type (HOTEL, FLIGHT)"),
+                                        fieldWithPath("productName").description("Product Name"),
+                                        fieldWithPath("productDesc").description("Product Description").optional(),
+                                        fieldWithPath("paymentStatus").description("Payment Status (PENDING, SUCCESS, FAIL)"),
+                                        fieldWithPath("paymentOption").description("Payment Option (BANK_TRANSFER, CREDIT_CARD").optional(),
+                                        fieldWithPath("created").description("created"),
+                                        fieldWithPath("updated").description("updated"))
+        ))
         .when()
         .port(this.port)
         .body("{\n" +
                   "    \"productType\": \"FLIGHT\",\n" +
-                  "    \"productName\": \"Flight Product\"\n" +
+                  "    \"productName\": \"Flight Product\",\n" +
+                  "    \"productDesc\": \"Flight Product\"\n" +
                   "}")
         .post("/api/order")
         .then()
@@ -72,7 +90,16 @@ public class OrderControllerTest {
                          preprocessRequest(modifyUris()
                                                .scheme("http")
                                                .host(HOST_NAME)
-                                               .removePort())))
+                                               .port(PORT)),
+                         responseFields(fieldWithPath("id").description("Order Id"),
+                                        fieldWithPath("productType").description("Product Type (HOTEL, FLIGHT)"),
+                                        fieldWithPath("productName").description("Product Name"),
+                                        fieldWithPath("productDesc").description("Product Description").optional(),
+                                        fieldWithPath("paymentStatus").description("Payment Status (PENDING, SUCCESS, FAIL)"),
+                                        fieldWithPath("paymentOption").description("Payment Option (BANK_TRANSFER, CREDIT_CARD").optional(),
+                                        fieldWithPath("created").description("created"),
+                                        fieldWithPath("updated").description("updated"))
+        ))
         .when()
         .port(this.port)
         .get("/api/order/1")
@@ -89,7 +116,15 @@ public class OrderControllerTest {
                          preprocessRequest(modifyUris()
                                                .scheme("http")
                                                .host(HOST_NAME)
-                                               .removePort())))
+                                               .port(port)),
+                         responseFields(fieldWithPath("[].id").description("Order Id"),
+                                        fieldWithPath("[].productType").description("Product Type (HOTEL, FLIGHT)"),
+                                        fieldWithPath("[].productName").description("Product Name"),
+                                        fieldWithPath("[].productDesc").description("Product Description").optional(),
+                                        fieldWithPath("[].paymentStatus").description("Payment Status (PENDING, SUCCESS, FAIL)"),
+                                        fieldWithPath("[].paymentOption").description("Payment Option (BANK_TRANSFER, CREDIT_CARD").optional(),
+                                        fieldWithPath("[].created").description("created"),
+                                        fieldWithPath("[].updated").description("updated"))))
         .when()
         .port(this.port)
         .get("/api/order")

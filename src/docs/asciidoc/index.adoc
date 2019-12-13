@@ -1,4 +1,4 @@
-= Spring REST Docs REST Assured Sample
+= Karate Demo Service
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
@@ -31,6 +31,10 @@ One showing the HTTP request body:
 
 include::{snippets}/create-order/request-body.adoc[]
 
+One showing the HTTP request body:
+
+include::{snippets}/create-order/request-fields.adoc[]
+
 And one showing the HTTP response:
 
 include::{snippets}/create-order/http-response.adoc[]
@@ -38,6 +42,10 @@ include::{snippets}/create-order/http-response.adoc[]
 One showing the HTTP response body:
 
 include::{snippets}/create-order/response-body.adoc[]
+
+HTTP response fields:
+
+include::{snippets}/create-order/response-fields.adoc[]
 
 === Query Order
 include::{snippets}/get-order-by-id/curl-request.adoc[]
@@ -54,6 +62,10 @@ One showing the HTTP response body:
 
 include::{snippets}/get-order-by-id/response-body.adoc[]
 
+HTTP response fields:
+
+include::{snippets}/get-order-by-id/response-fields.adoc[]
+
 === Find All Order
 include::{snippets}/find-all-orders/curl-request.adoc[]
 
@@ -69,6 +81,10 @@ One showing the HTTP response body:
 
 include::{snippets}/find-all-orders/response-body.adoc[]
 
+HTTP response fields:
+
+include::{snippets}/find-all-orders/response-fields.adoc[]
+
 == Payment
 
 === Payment Options
@@ -78,10 +94,6 @@ include::{snippets}/payment-options/curl-request.adoc[]
 HTTP request:
 
 include::{snippets}/payment-options/http-request.adoc[]
-
-HTTP request parameters:
-
-include::{snippets}/payment-options/request-parameters.adoc[]
 
 HTTP response:
 
